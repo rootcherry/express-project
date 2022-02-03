@@ -1,11 +1,15 @@
 const express = require('express');
+const path = require('path');
+const PORT = 3000;
 
 const friendsRouter = require('./routes/friends.router');
 const messagesRouter = require('./routes/messages.router');
 
 const app = express();
 
-const PORT = 3000;
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'views'));
+
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -15,7 +19,15 @@ app.use((req, res, next) => {
   console.log(`${req.method} ${req.baseUrl}${req.url} ${delta}ms`);
 });
 
+app.use('/site', express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+
+app.get('/', (req, res) => {
+  res.render('index', {
+    title: 'My Friends Are VERY Clever',
+    caption: 'Let\'s go skiing!',
+  });
+});
 
 app.use('/friends', friendsRouter);
 app.use('/messages', messagesRouter);
